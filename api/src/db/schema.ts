@@ -162,3 +162,14 @@ export const workoutTemplates = pgTable("workout_templates", {
     .defaultNow()
     .$onUpdate(now),
 });
+
+export const files = pgTable("files", {
+  id: uuid().primaryKey().defaultRandom(),
+  userId: uuid().references(() => users.id, { onDelete: "set null" }),
+  key: text(),
+  mimeType: text(),
+  sizeBytes: integer(),
+  createdAt: timestamp({ mode: "date", withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
