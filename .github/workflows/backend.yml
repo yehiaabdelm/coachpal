@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     env:
-      APP_NAME: backend-${GITHUB_REPOSITORY##*/}
+      APP_NAME: backend-${{ github.event.repository.name }}
     steps:
       - name: Checkout api
         uses: actions/checkout@v4
@@ -132,6 +132,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-22.04
+    env:
+      APP_NAME: backend-${{ github.event.repository.name }}
+
     steps:
       - name: Retrieve container
         uses: actions/download-artifact@v4
