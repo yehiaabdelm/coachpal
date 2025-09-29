@@ -98,12 +98,12 @@ jobs:
         run: |
           cat <<-EOF > container/etc/systemd/system/${APP_NAME}.service
           [Unit]
-          Description=$GITHUB_REPOSITORY
+          Description=${APP_NAME}
           StartLimitBurst=5
           StartLimitIntervalSec=60
           [Service]
           DynamicUser=yes
-          StateDirectory=services/${GITHUB_REPOSITORY##*/}
+          StateDirectory=services/${APP_NAME}
           Environment=PORT=3000 SHUTDOWN_TIMEOUT=5
           Environment=HOME=/opt/app
           Environment=DATABASE_URL=${{ secrets.DATABASE_URL }}
