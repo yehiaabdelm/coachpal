@@ -161,7 +161,7 @@ jobs:
             echo "### ERROR: portablectl is not installed" >&2 ; exit 10
           fi
           shopt -s nullglob
-          declare -a images=("${name}"_*.raw)
+          declare -a images=("${APP_NAME}"_*.raw)
           declare -i n=${#images[@]}
           if (( n == 0 )); then
             echo "### ERROR: No images were found" >&2 ; exit 10
