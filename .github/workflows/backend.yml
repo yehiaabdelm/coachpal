@@ -154,9 +154,8 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} <<'BASH'
           set -e
-          declare -r GITHUB_REPOSITORY='${{ github.repository }}'
-          declare -r APP_NAME='backend-${GITHUB_REPOSITORY##*/}'
-          cd ~/portables/${GITHUB_REPOSITORY}
+          declare -r APP_NAME='backend-${{ github.event.repository.name }}'
+          cd ~/portables/${{ github.repository }}
           if ! command -v portablectl &> /dev/null; then
             echo "### ERROR: portablectl is not installed" >&2 ; exit 10
           fi
