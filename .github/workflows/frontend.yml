@@ -1,4 +1,4 @@
-name: Deploy to server
+name: Deploy frontend to server
 on:
   push:
     branches:
@@ -8,13 +8,15 @@ on:
       - ".github/workflows/frontend.yml"
 jobs:
   build:
-    if: false
     runs-on: ubuntu-22.04
+    env:
+      APP_NAME: frontend-${{ github.event.repository.name }}
     steps:
       - name: Checkout app
         uses: actions/checkout@v4
         with:
-          path: app
+          sparse-checkout: web
+          sparse-checkout-cone-mode: false
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -24,14 +26,12 @@ jobs:
           cache-dependency-path: "**/package-lock.json"
 
       - name: Install dependencies
-        run: cd app/web && npm install --frozen-lockfile
+        run: cd web && npm install --frozen-lockfile
 
       - name: Build app
-        run: cd app/web && npm run build
+        run: cd web && npm run build
         env:
-          PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-          PUBLIC_SUPABASE_API_URL: ${{ secrets.PUBLIC_SUPABASE_API_URL }}
-          PUBLIC_FRONTEND_URL: ${{secrets.PUBLIC_FRONTEND_URL}}
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
 
       - name: Create container file structure
         run: |
@@ -44,7 +44,7 @@ jobs:
             container/sys \
             container/tmp \
             container/usr/lib \
-            container/var/lib/services/${GITHUB_REPOSITORY##*/} \
+            container/var/lib/services/${APP_NAME} \
             container/var/tmp
           touch \
             container/etc/machine-id \
@@ -84,7 +84,7 @@ jobs:
         run: cp $(which node) container/opt
 
       - name: Copy app into container
-        run: cp -r app/web/{build,package.json,package-lock.json} container/opt/app
+        run: cp -r web/{build,package.json,package-lock.json} container/opt/app
 
       - name: Install curl
         run: sudo apt-get update && sudo apt-get install -y curl
@@ -97,19 +97,17 @@ jobs:
 
       - name: Create .service file for app
         run: |
-          cat <<-EOF > container/etc/systemd/system/${GITHUB_REPOSITORY##*/}.service
+          cat <<-EOF > container/etc/systemd/system/${APP_NAME}.service
           [Unit]
-          Description=$GITHUB_REPOSITORY
+          Description=${APP_NAME}
           StartLimitBurst=5
           StartLimitIntervalSec=60
           [Service]
           DynamicUser=yes
-          StateDirectory=services/${GITHUB_REPOSITORY##*/}
+          StateDirectory=services/${APP_NAME}
           Environment=PORT=5006 SHUTDOWN_TIMEOUT=5
           Environment=HOME=/opt/app
-          Environment=PUBLIC_SUPABASE_ANON_KEY=${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
-          Environment=PUBLIC_SUPABASE_API_URL=${{ secrets.PUBLIC_SUPABASE_API_URL }}
-          Environment=PUBLIC_FRONTEND_URL=${{ secrets.PUBLIC_FRONTEND_URL }}
+          Environment=PUBLIC_API_URL=${{ secrets.PUBLIC_API_URL }}
           Environment=NODE_ENV=production
           Environment=BODY_SIZE_LIMIT=6M
           ExecStart=/opt/node /opt/app/build
@@ -122,7 +120,7 @@ jobs:
         run: |
           mksquashfs \
             container \
-            "${GITHUB_REPOSITORY##*/}_$(date --utc '+%F.%H%M')".raw \
+            "${APP_NAME}_$(date --utc '+%F.%H%M')".raw \
             -exit-on-error \
             -all-root \
             -quiet
@@ -133,9 +131,10 @@ jobs:
           retention-days: 1
 
   deploy:
-    if: false
     needs: build
     runs-on: ubuntu-22.04
+    env:
+      APP_NAME: frontend-${{ github.event.repository.name }}
     steps:
       - name: Retrieve container
         uses: actions/download-artifact@v4
@@ -150,15 +149,14 @@ jobs:
       - name: Upload container to server
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "mkdir -p ~/portables/${{ github.repository }}"
-          scp "${GITHUB_REPOSITORY##*/}_"*.raw \
+          scp "${APP_NAME}_"*.raw \
               ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/portables/${{ github.repository }}/
       - name: Attach container
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} <<'BASH'
           set -e
-          declare -r GITHUB_REPOSITORY='${{ github.repository }}'
-          declare -r name="${GITHUB_REPOSITORY##*/}"
-          cd ~/portables/${GITHUB_REPOSITORY}
+          declare -r APP_NAME='frontend-${{ github.event.repository.name }}'
+          cd ~/portables/${{ github.repository }}
           if ! command -v portablectl &> /dev/null; then
             echo "### ERROR: portablectl is not installed" >&2 ; exit 10
           fi
