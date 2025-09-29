@@ -114,22 +114,21 @@ export const coachAthlete = pgTable("coach_athlete", {
 });
 
 export const invitationTypeEnum = pgEnum("invitation_type", [
-  "coach",
+  "organization",
   "athlete",
 ]);
 
 export const invitationStatusEnum = pgEnum("invitation_status", [
   "pending",
   "accepted",
-  "expired",
 ]);
 
 export const invitations = pgTable("invitations", {
   id: uuid().primaryKey().defaultRandom(),
-  invitedByUserId: uuid().references(() => users.id, { onDelete: "set null" }),
+  invitedByUserId: uuid().references(() => users.id, { onDelete: "set null" }).notNull(),
   organizationId: uuid().references(() => organizations.id, {
     onDelete: "cascade",
-  }),
+  }).notNull(),
   email: text().notNull(),
   firstName: text(),
   lastName: text(),
@@ -162,7 +161,9 @@ export const verificationCodes = pgTable("verification_codes", {
   code: text().notNull(),
   consumedAt: timestamp({ mode: "date", withTimezone: true }),
   expiresAt: timestamp({ mode: "date", withTimezone: true }).notNull(),
-  createdAt: timestamp({ mode: "date", withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp({ mode: "date", withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export const workoutSplits = pgTable("workout_splits", {
@@ -307,8 +308,6 @@ export const workoutExerciseGroups = pgTable("workout_exercise_groups", {
     .$onUpdate(now),
 });
 
-
-
 export const workoutExercises = pgTable("workout_exercises", {
   id: uuid().primaryKey().defaultRandom(),
   workoutId: uuid().references(() => workouts.id, {
@@ -409,7 +408,8 @@ export const files = pgTable("files", {
     .defaultNow(),
 });
 
-export const userRelations = relations(users, ({ many }) => ({
+// Relations
+export const userRelations = relations(users, ({ many, one }) => ({
   heightEntries: many(heightEntries),
   weightEntries: many(weightEntries),
   workouts: many(workouts),
@@ -420,6 +420,37 @@ export const userRelations = relations(users, ({ many }) => ({
   workoutTemplates: many(workoutTemplates),
   exercises: many(exercises),
   files: many(files),
+  invitationsSent: many(invitations, { relationName: "invitedBy" }),
+  invitationsAccepted: many(invitations, { relationName: "acceptedBy" }),
+  verificationCodes: many(verificationCodes),
+}));
+
+export const invitationsRelations = relations(invitations, ({ one }) => ({
+    organization: one(organizations, {
+    fields: [invitations.organizationId],
+    references: [organizations.id],
+  }),
+  invitedBy: one(users, {
+    fields: [invitations.invitedByUserId],
+    references: [users.id],
+    relationName: "invitedBy",
+  }),
+  acceptedBy: one(users, {
+    fields: [invitations.acceptedByUserId],
+    references: [users.id],
+    relationName: "acceptedBy",
+  }),
+  role: one(roles, {
+    fields: [invitations.role],
+    references: [roles.name],
+  }),
+}));
+
+export const verificationCodesRelations = relations(verificationCodes, ({ one }) => ({
+  user: one(users, {
+    fields: [verificationCodes.userId],
+    references: [users.id],
+  }),
 }));
 
 export const weightEntriesRelations = relations(weightEntries, ({ one }) => ({

@@ -7,7 +7,8 @@ type AppUser = { id: string; email: string; };
 
 const ISSUER = process.env.APP_ISSUER ?? 'healthchat' // optional but nice
 
-export const jwtAuth = (cookieName = "token") => {
+export const jwtAuth = () => {
+  const cookieName = "token";
   return async (c: Context<{ Variables: Variables }>, next: Next) => {
     const cookie = getCookie(c, cookieName);
     if (cookie) {
@@ -30,3 +31,4 @@ export async function sign(user: AppUser, ttlSeconds = 60 * 60 * 24) {
   }
   return await honoSign(payload, process.env.JWT_SECRET as string) // HS256 default
 }
+
