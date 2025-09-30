@@ -1,6 +1,13 @@
 export type User = {
-	firstName: string;
-	lastName: string;
+	firstName: string | null;
+	lastName: string | null;
 	email: string;
-	emailVerifiedAt: string;
+	emailVerifiedAt: Date | null;
+	organizations: {
+		role: string;
+		organization: {
+			name: string;
+			id: string;
+		} | null;
+	}[];
 };

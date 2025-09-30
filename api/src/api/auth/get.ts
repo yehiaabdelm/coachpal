@@ -73,6 +73,21 @@ export default function registerChatGet(app: Hono) {
         email: true,
         emailVerifiedAt: true,
       },
+      with: {
+        organizations: {
+          columns: {
+            role: true
+          },
+          with: {
+            organization: {
+              columns: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        }
+      },
     });
     return c.json(user);
   });

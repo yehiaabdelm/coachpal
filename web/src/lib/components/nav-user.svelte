@@ -1,21 +1,17 @@
 <script lang="ts">
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 	import LogOutIcon from '@lucide/svelte/icons/log-out';
-
+	import LifeBuoy from '@lucide/svelte/icons/life-buoy';
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import { useSidebar } from '$lib/components/ui/sidebar/index.js';
+	import type { User } from '../../types';
 
 	let {
 		user
 	}: {
-		user: {
-			firstName: string;
-			lastName: string;
-			email: string;
-			// avatar: string;
-		};
+		user: User;
 	} = $props();
 
 	const sidebar = useSidebar();
@@ -34,7 +30,7 @@
 						<Avatar.Root class="size-8 rounded-lg">
 							<!-- <Avatar.Image src={user.avatar} alt={user.firstName} /> -->
 							<Avatar.Fallback class="rounded-lg"
-								>{user.firstName.slice(0, 1)}{user.lastName.slice(0, 1)}</Avatar.Fallback
+								>{user?.firstName?.slice(0, 1)}{user?.lastName?.slice(0, 1)}</Avatar.Fallback
 							>
 						</Avatar.Root>
 						<div class="grid flex-1 text-left text-sm leading-tight">
@@ -55,28 +51,33 @@
 					<div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
 						<Avatar.Root class="size-8 rounded-lg">
 							<!-- <Avatar.Image src={user.avatar} alt={user.firstName} /> -->
-							<Avatar.Fallback class="rounded-lg">{user.firstName.slice(0, 1)}</Avatar.Fallback>
+							<Avatar.Fallback class="rounded-lg"
+								>{user?.firstName?.slice(0, 1)}{user?.lastName?.slice(0, 1)}</Avatar.Fallback
+							>
 						</Avatar.Root>
 						<div class="grid flex-1 text-left text-sm leading-tight">
-							<span class="truncate font-medium"
-								>{user.firstName.slice(0, 1)}{user.lastName.slice(0, 1)}</span
-							>
+							<span class="truncate font-medium">{user.firstName} {user.lastName}</span>
 							<span class="truncate text-xs">{user.email}</span>
 						</div>
 					</div>
 				</DropdownMenu.Label>
-
-				<!-- <DropdownMenu.Group>
-					<DropdownMenu.Item>
-						<BadgeCheckIcon />
-						Account
-					</DropdownMenu.Item>
-				</DropdownMenu.Group> -->
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item>
-					<LogOutIcon />
-					Log out
-				</DropdownMenu.Item>
+
+				<DropdownMenu.Group>
+					<a href="mailto:support@teletyped.com">
+						<DropdownMenu.Item>
+							<LifeBuoy />
+							Support
+						</DropdownMenu.Item>
+					</a>
+				</DropdownMenu.Group>
+				<DropdownMenu.Separator />
+				<a href="/logout">
+					<DropdownMenu.Item>
+						<LogOutIcon />
+						Log out
+					</DropdownMenu.Item>
+				</a>
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</Sidebar.MenuItem>

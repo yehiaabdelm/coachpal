@@ -2,6 +2,9 @@
 	import * as Collapsible from '$lib/components/ui/collapsible/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+	import SettingsDialog from './settings-dialog.svelte';
+
+	let settingsDialog = $state(false);
 
 	let {
 		items
@@ -20,6 +23,7 @@
 		}[];
 	} = $props();
 </script>
+
 
 <Sidebar.Group>
 	<Sidebar.GroupLabel>Platform</Sidebar.GroupLabel>

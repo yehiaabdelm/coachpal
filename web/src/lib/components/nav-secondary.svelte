@@ -1,7 +1,11 @@
 <script lang="ts">
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { Component, ComponentProps } from 'svelte';
+	import BankNoteIcon from '@lucide/svelte/icons/banknote';
+	import Settings from '@lucide/svelte/icons/settings';
+	import SettingsDialog from './settings-dialog.svelte';
 
+	let settingsDialog = $state(false);
 	let {
 		ref = $bindable(null),
 		items,
@@ -13,23 +17,45 @@
 			icon: Component;
 		}[];
 	} & ComponentProps<typeof Sidebar.Group> = $props();
+
+	[
+		{
+			title: 'Payments',
+			url: '#',
+			icon: BankNoteIcon
+		},
+		{
+			title: 'Settings',
+			url: '#',
+			icon: Settings
+		}
+	];
 </script>
+
+<SettingsDialog open={settingsDialog} />
 
 <Sidebar.Group bind:ref {...restProps}>
 	<Sidebar.GroupContent>
 		<Sidebar.Menu>
-			{#each items as item (item.title)}
-				<Sidebar.MenuItem>
+			<Sidebar.MenuItem>
+				<a href="/payments">
 					<Sidebar.MenuButton size="default">
-						{#snippet child({ props })}
-							<a href={item.url} {...props}>
-								<item.icon />
-								<span>{item.title}</span>
-							</a>
-						{/snippet}
+						<BankNoteIcon />
+						<span>Payments</span>
 					</Sidebar.MenuButton>
-				</Sidebar.MenuItem>
-			{/each}
+				</a>
+			</Sidebar.MenuItem>
+			<Sidebar.MenuItem
+				class="curor-pointer"
+				onclick={() => {
+					settingsDialog = !settingsDialog;
+				}}
+			>
+				<Sidebar.MenuButton size="default">
+					<Settings />
+					<span>Settings</span>
+				</Sidebar.MenuButton>
+			</Sidebar.MenuItem>
 		</Sidebar.Menu>
 	</Sidebar.GroupContent>
 </Sidebar.Group>
