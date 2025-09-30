@@ -5,8 +5,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn, type WithElementRef } from '$lib/utils.js';
-
-	let PUBLIC_API_URL = 'http://localhost:3000';
+	import { PUBLIC_API_URL } from '$env/static/public';
 	let {
 		ref = $bindable(null),
 		class: className,

@@ -8,8 +8,8 @@ const app = new Hono();
 app.use(
   "*",
   cors({
-    origin: ["http://localhost:5173", "https://coachpal.app"],
-    allowMethods: ["POST", "GET", "OPTIONS"],
+    origin: ["http://localhost:5173", "https://dev.coachpal.app"],
+    allowMethods: ["POST", "GET", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
