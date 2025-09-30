@@ -54,7 +54,7 @@ export const jwtAuth = createMiddleware<{ Variables: Variables }>(
   }
 );
 
-export async function sign(user: AppUser, ttlSeconds = 60 * 60 * 24) {
+export async function sign(user: AppUser, ttlSeconds = 60 * 60 * 24 * 30) {
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     id: user.id,

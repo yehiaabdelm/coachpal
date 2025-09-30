@@ -18,12 +18,10 @@
 		email: '',
 		password: ''
 	});
-	let loading = $state(false);
 	let error = $state('');
 
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
-		loading = true;
 		error = '';
 
 		try {
@@ -44,8 +42,6 @@
 		} catch (err: any) {
 			console.log(err);
 			error = err.message;
-		} finally {
-			loading = false;
 		}
 	}
 </script>
@@ -88,6 +84,13 @@
 			</div>
 		</div>
 	</form>
+	<div
+		class="text-red-light col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed"
+	>
+		<span
+			>{error}
+		</span>
+	</div>
 	<div
 		class="text-muted-foreground *:[a]:hover:text-primary *:[a]:underline *:[a]:underline-offset-4 text-balance text-center text-xs"
 	>

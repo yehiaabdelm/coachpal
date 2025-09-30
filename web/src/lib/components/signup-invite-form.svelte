@@ -12,8 +12,9 @@
 	let payload = $state({
 		firstName: '',
 		lastName: '',
-		password: '',
+		password: ''
 	});
+	let error = $state('');
 
 	async function fetchInvite(): Promise<
 		| {
@@ -67,11 +68,10 @@
 				throw new Error(data.message ?? 'Failed to sign up');
 			}
 			const data = await res.json();
-			console.log('✅ signed up:', data);
-			// e.g. redirect to dashboard
 			window.location.href = '/dashboard';
 		} catch (err: any) {
 			console.log(err);
+			error = err.message;
 		}
 	}
 

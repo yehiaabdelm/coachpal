@@ -1,15 +1,14 @@
-import type { LayoutLoad } from '../$types';
+import type { PageLoad } from './$types';
 import { PUBLIC_API_URL } from '$env/static/public';
-import type { User } from '../../../types';
 import { redirect } from '@sveltejs/kit';
+import type { User } from '../../../types';
+
 export const load = (async ({ fetch }) => {
 	const response = await fetch(`${PUBLIC_API_URL}/auth/me`, {
 		credentials: 'include'
 	});
 	const user: User = await response.json();
-
-	if (!user.emailVerifiedAt) {
-		redirect(303, '/email-verification');
+	if (user.emailVerifiedAt) {
+		redirect(303, '/dashboard');
 	}
-
-}) satisfies LayoutLoad;
+}) satisfies PageLoad;

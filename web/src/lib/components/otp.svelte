@@ -1,37 +1,59 @@
 <script lang="ts">
 	import * as InputOTP from '$lib/components/ui/input-otp/index.js';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { Label } from '$lib/components/ui/label/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn, type WithElementRef } from '$lib/utils.js';
+	import { PUBLIC_API_URL } from '$env/static/public';
 
 	let code = $state('');
-
-	$inspect(code);
+	let error = $state('');
 	let {
+		email,
 		ref = $bindable(null),
 		class: className,
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
+	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & { email: string } = $props();
 
-	const id = $props.id();
+	async function handleSubmit(e: Event) {
+		e.preventDefault();
+
+		try {
+			const res = await fetch(`${PUBLIC_API_URL}/auth/email-verification`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ code }),
+				credentials: 'include'
+			});
+
+			if (!res.ok) {
+				const data = await res.json().catch(() => ({}));
+				throw new Error(data.message ?? 'Failed to sign up');
+			}
+
+			const data = await res.json();
+
+			window.location.href = '/dashboard';
+		} catch (err: any) {
+			console.log(err);
+			error = err.message;
+		}
+	}
 </script>
 
 <div class={cn('flex flex-col gap-6', className)} bind:this={ref} {...restProps}>
-	<form>
-		<div class="flex flex-col gap-3">
+	<form onsubmit={handleSubmit} class="mx-auto">
+		<div class="flex flex-col gap-6">
 			<div class="flex flex-col gap-4">
-				<a href="##" class="flex flex-col gap-2 font-medium">
+				<a href="##" class="items-left flex flex-col gap-2 font-medium">
 					<div class="flex rounded-md">
 						<img class="w-10" src="/icon-transparent.png" alt="" />
 					</div>
 				</a>
 				<h1 class="text-gray-2-dark text-sm">
-					We sent a code to your email so we can <br /> verify your email
+					We sent a code to <span class="font-semibold">{email}</span> <br /> so we can verify your email
 				</h1>
 			</div>
-			<div class="flex flex-col gap-3">
+			<div class="items-left flex flex-col gap-4">
 				<InputOTP.Root maxlength={6} bind:value={code}>
 					{#snippet children({ cells })}
 						<InputOTP.Group>
@@ -47,17 +69,15 @@
 						</InputOTP.Group>
 					{/snippet}
 				</InputOTP.Root>
+				<div class="flex flex-col gap-2">
+					<Button type="submit" class="w-min">Submit</Button>
+					<div
+						class="text-red-light col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed"
+					>
+						<span>{error} </span>
+					</div>
+				</div>
 			</div>
 		</div>
-		<Button type="submit" class="mt-4">Submit</Button>
 	</form>
-	<!-- <div class="text-gray-3-dark text-sm">
-		Have have an account?
-		<a href="/login" class="underline underline-offset-4"> Log in </a>
-	</div> -->
-	<!-- <div
-		class="text-muted-foreground *:[a]:hover:text-primary *:[a]:underline *:[a]:underline-offset-4 text-balance text-center text-xs"
-	>
-		Have an account? <a href="##">Log in</a>.
-	</div> -->
 </div>

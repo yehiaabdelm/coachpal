@@ -2,6 +2,7 @@ import type { Hono } from "hono";
 import db from "../../db/index.js";
 import * as schema from "../../db/schema.js";
 import { eq } from "drizzle-orm";
+import { jwtAuth, sign } from "../../middleware/auth.js";
 
 export default function registerChatGet(app: Hono) {
   app.get("/invite/:token", async (c) => {
@@ -31,25 +32,48 @@ export default function registerChatGet(app: Hono) {
 
     if (!invite) {
       return c.json(
-        { message: "This invite doesn't exist. Ask your administrator for a new one." },
+        {
+          message:
+            "This invite doesn't exist. Ask your administrator for a new one.",
+        },
         404
       );
     }
 
     if (invite.expiresAt && new Date(invite.expiresAt) < new Date()) {
       return c.json(
-        { message: "This invite has expired. Ask your administrator for a new one." },
+        {
+          message:
+            "This invite has expired. Ask your administrator for a new one.",
+        },
         410
       );
     }
 
     if (invite.acceptedAt) {
       return c.json(
-        { message: "This invite has already been used. You may need to log in instead." },
+        {
+          message:
+            "This invite has already been used. You may need to log in instead.",
+        },
         410
       );
     }
 
     return c.json(invite);
+  });
+
+  app.get("/me", jwtAuth, async (c) => {
+    const id = c.get("user").id;
+    const user = await db.query.users.findFirst({
+      where: eq(schema.users.id, id),
+      columns: {
+        firstName: true,
+        lastName: true,
+        email: true,
+        emailVerifiedAt: true,
+      },
+    });
+    return c.json(user);
   });
 }

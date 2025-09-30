@@ -2,7 +2,7 @@ import type { Hono } from "hono";
 import "dotenv/config";
 import db from "../../db/index.js";
 import * as schema from "../../db/schema.js";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import bcrypt from "bcrypt";
@@ -30,9 +30,8 @@ const loginSchema = z.object({
   password: z.string().min(8),
 });
 
-const verifyEmailSchema = z.object({
-  token: z.string(),
-  password: z.string().min(8),
+const emailVerificationSchema = z.object({
+  code: z.string().length(6),
 });
 
 export default function registerChatPost(app: Hono) {
@@ -53,12 +52,58 @@ export default function registerChatPost(app: Hono) {
   });
 
   app.post(
-    "/verify-email",
-    zValidator("json", verifyEmailSchema),
+    "/email-verification",
+    zValidator("json", emailVerificationSchema),
     jwtAuth,
     async (c) => {
       const body = c.req.valid("json");
-      // return cookie
+      const user = c.get("user");
+      const verificationCode = await db.query.verificationCodes.findFirst({
+        where: and(
+          eq(schema.verificationCodes.code, body.code),
+          eq(schema.verificationCodes.userId, user.id),
+          eq(schema.verificationCodes.type, "email")
+        ),
+      });
+
+      if (!verificationCode) {
+        return c.json(
+          {
+            message: "Incorrect verification code.",
+          },
+          404
+        );
+      } else if (
+        verificationCode.expiresAt &&
+        new Date(verificationCode.expiresAt) < new Date()
+      ) {
+        return c.json(
+          {
+            message: "Code has expired.",
+          },
+          400
+        );
+      } else if (verificationCode.consumedAt) {
+        return c.json(
+          {
+            message: "Code already used.",
+          },
+          400
+        );
+      }
+
+      await db.transaction(async (tx) => {
+        await tx
+          .update(schema.users)
+          .set({ emailVerifiedAt: new Date() })
+          .where(eq(schema.users.id, user.id));
+        await db
+          .update(schema.verificationCodes)
+          .set({ consumedAt: new Date() })
+          .where(eq(schema.verificationCodes.id, verificationCode.id));
+      });
+
+      return c.json({ message: "Email verified" });
     }
   );
 
@@ -147,18 +192,12 @@ export default function registerChatPost(app: Hono) {
   );
 
   app.post(
-    "/create-invite",
-    zValidator("json", signupWithOrgSchema),
-    async (c) => {}
-  );
-
-  app.post(
     "/signup-with-organization",
     zValidator("json", signupWithOrgSchema),
     async (c) => {
       const body = c.req.valid("json");
       const hashedPassword = await bcrypt.hash(body.password, 10);
-      const user = await db.transaction(async (tx) => {
+      const { user, verificationCode } = await db.transaction(async (tx) => {
         const [org] = await tx
           .insert(schema.organizations)
           .values({
@@ -179,25 +218,21 @@ export default function registerChatPost(app: Hono) {
           userId: user.id,
           role: "owner",
         });
-        return user;
+        const code = String(Math.floor(100000 + Math.random() * 900000));
+        const verificationCode = await tx
+          .insert(schema.verificationCodes)
+          .values({
+            userId: user.id,
+            type: "email",
+            code,
+            expiresAt: new Date(Date.now() + 3 * 60 * 60 * 1000),
+          });
+        return { user, verificationCode };
       });
       // send email verification email
-      // redirect to email verification
       const token = await sign(user);
       setCookie(c, "token", token);
       return c.json({ token });
     }
   );
-  app.get("/me", jwtAuth, async (c) => {
-    const id = c.get("user").id
-    const user = await db.query.users.findFirst({
-      where: eq(schema.users.id, id),
-      columns: {
-        firstName: true,
-        lastName: true,
-        emailVerifiedAt: true
-      }
-    });
-    return c.json(user);
-  });
 }
