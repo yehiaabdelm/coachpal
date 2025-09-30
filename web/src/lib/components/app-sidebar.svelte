@@ -1,16 +1,18 @@
-<script lang="ts" module>
+<script lang="ts">
 	import BookOpenIcon from '@lucide/svelte/icons/book-open';
-	import BotIcon from '@lucide/svelte/icons/bot';
 	import ChartPieIcon from '@lucide/svelte/icons/chart-pie';
-	import FrameIcon from '@lucide/svelte/icons/frame';
-	import LifeBuoyIcon from '@lucide/svelte/icons/life-buoy';
-	import MapIcon from '@lucide/svelte/icons/map';
 	import SendIcon from '@lucide/svelte/icons/send';
 	import UserRound from '@lucide/svelte/icons/user-round';
 	import Settings2Icon from '@lucide/svelte/icons/settings-2';
-	import SquareTerminalIcon from '@lucide/svelte/icons/square-terminal';
+	import type { User } from '../../types';
+	import NavMain from './nav-main.svelte';
+	import NavSecondary from './nav-secondary.svelte';
+	import NavUser from './nav-user.svelte';
+	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+	import CommandIcon from '@lucide/svelte/icons/command';
+	import type { ComponentProps } from 'svelte';
 
-	const data = {
+		const data = {
 		user: {
 			name: 'Coach John',
 			email: 'coach@example.com',
@@ -76,17 +78,12 @@
 		],
 		projects: []
 	};
-</script>
-
-<script lang="ts">
-	import NavMain from './nav-main.svelte';
-	import NavSecondary from './nav-secondary.svelte';
-	import NavUser from './nav-user.svelte';
-	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import CommandIcon from '@lucide/svelte/icons/command';
-	import type { ComponentProps } from 'svelte';
-
-	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+	
+	let {
+		user,
+		ref = $bindable(null),
+		...restProps
+	}: ComponentProps<typeof Sidebar.Root> & { user: User } = $props();
 </script>
 
 <Sidebar.Root bind:ref variant="inset" {...restProps}>
@@ -116,6 +113,6 @@
 		<NavSecondary items={data.navSecondary} class="mt-auto" />
 	</Sidebar.Content>
 	<Sidebar.Footer>
-		<NavUser user={data.user} />
+		<NavUser user={user} />
 	</Sidebar.Footer>
 </Sidebar.Root>

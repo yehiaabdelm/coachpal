@@ -55,7 +55,7 @@ export default function registerChatPost(app: Hono) {
   app.post(
     "/verify-email",
     zValidator("json", verifyEmailSchema),
-    jwtAuth(),
+    jwtAuth,
     async (c) => {
       const body = c.req.valid("json");
       // return cookie
@@ -188,5 +188,16 @@ export default function registerChatPost(app: Hono) {
       return c.json({ token });
     }
   );
-  app.post("/me", jwtAuth(), async (c) => {});
+  app.get("/me", jwtAuth, async (c) => {
+    const id = c.get("user").id
+    const user = await db.query.users.findFirst({
+      where: eq(schema.users.id, id),
+      columns: {
+        firstName: true,
+        lastName: true,
+        emailVerifiedAt: true
+      }
+    });
+    return c.json(user);
+  });
 }
