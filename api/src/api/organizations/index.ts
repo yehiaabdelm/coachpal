@@ -2,10 +2,10 @@ import { Hono } from "hono";
 // import registerAuthGet from "./get.js";
 import registerOrganizationPost from "./post.js";
 
-const auth = new Hono();
+const organizations = new Hono();
 
-auth.use("*");
+organizations.use("*");
 // registerAuthGet(auth);
-registerOrganizationPost(auth);
+registerOrganizationPost(organizations);
 
-export default auth;
+export default organizations;

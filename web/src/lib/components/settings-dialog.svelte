@@ -9,28 +9,32 @@
 	import LockIcon from '@lucide/svelte/icons/lock';
 	import Building from '@lucide/svelte/icons/building';
 	import SettingsIcon from '@lucide/svelte/icons/settings';
+	import SettingsGeneral from './settings-general.svelte';
+	import SettingsOrganization from './settings-organization.svelte';
+	import SettingsTeam from './settings-team.svelte';
+	import SettingsLanguageRegion from './settings-language-region.svelte';
 
-	const data = {
-		nav: [
-			{ name: 'General', icon: SettingsIcon },
-			{ name: 'Team', icon: UsersRound },
-			{ name: 'Organization', icon: Building },
-			{ name: 'Language & region', icon: GlobeIcon }
-			// { name: 'Privacy & visibility', icon: LockIcon }
-		]
-	};
+	const nav = [
+		{ name: 'General', icon: SettingsIcon, content: SettingsGeneral },
+		{ name: 'Team', icon: UsersRound, content: SettingsTeam },
+		{ name: 'Organization', icon: Building, content: SettingsOrganization },
+		{ name: 'Language & region', icon: GlobeIcon, content: SettingsLanguageRegion }
+		// { name: 'Privacy & visibility', icon: LockIcon }
+	];
 
+	let selected = $state({ name: 'General', icon: SettingsIcon, content: SettingsGeneral });
 	let { open = $bindable(false) }: { open: boolean } = $props();
 </script>
 
 <Dialog.Root bind:open>
 	<Dialog.Content
 		class="overflow-hidden p-0 md:max-h-[500px] md:max-w-[700px] lg:max-w-[800px]"
+		showCloseButton={false}
 		trapFocus={false}
 	>
 		<Dialog.Title class="sr-only">Settings</Dialog.Title>
 		<Dialog.Description class="sr-only">Customize your settings here.</Dialog.Description>
-		<Sidebar.Provider class="items-start">
+		<Sidebar.Provider class=" items-start">
 			<Sidebar.Root collapsible="none" class="hidden md:flex">
 				<Sidebar.Header>
 					<Sidebar.Menu>
@@ -53,13 +57,17 @@
 						</Sidebar.MenuItem>
 					</Sidebar.Menu>
 				</Sidebar.Header>
-				<Sidebar.Content>
+				<Sidebar.Content class="mt-3">
 					<Sidebar.Group>
 						<Sidebar.GroupContent>
 							<Sidebar.Menu>
-								{#each data.nav as item (item.name)}
-									<Sidebar.MenuItem>
-										<Sidebar.MenuButton isActive={item.name === 'Team'}>
+								{#each nav as item (item.name)}
+									<Sidebar.MenuItem
+										onclick={() => {
+											selected = item;
+										}}
+									>
+										<Sidebar.MenuButton isActive={item.name === selected.name}>
 											{#snippet child({ props })}
 												<a href="##" {...props}>
 													<item.icon />
@@ -74,13 +82,8 @@
 					</Sidebar.Group>
 				</Sidebar.Content>
 			</Sidebar.Root>
-			<main class="flex h-[480px] flex-1 flex-col overflow-hidden">
-				<header
-					class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12"
-				>
-					<p class=" mt-4 gap-2 self-start px-4 text-lg font-medium md:block">General</p>
-				</header>
-				<div class="flex flex-1 flex-col gap-4 overflow-y-auto p-4 pt-0"></div>
+			<main class="flex h-[480px] flex-1 flex-col overflow-hidden px-2">
+				<selected.content />
 			</main>
 		</Sidebar.Provider>
 	</Dialog.Content>

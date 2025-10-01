@@ -17,28 +17,6 @@
 	import TeamSwitcher from './team-switcher.svelte';
 
 	const data = {
-		user: {
-			name: 'Coach John',
-			email: 'coach@example.com',
-			avatar: '/avatars/coach.jpg'
-		},
-		teams: [
-			{
-				name: 'Acme Inc',
-				logo: GalleryVerticalEndIcon,
-				plan: 'Enterprise'
-			},
-			{
-				name: 'Acme Corp.',
-				logo: AudioWaveformIcon,
-				plan: 'Startup'
-			},
-			{
-				name: 'Evil Corp.',
-				logo: CommandIcon,
-				plan: 'Free'
-			}
-		],
 		navMain: [
 			{
 				title: 'Clients',
