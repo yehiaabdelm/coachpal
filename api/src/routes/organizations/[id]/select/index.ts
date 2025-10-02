@@ -1,16 +1,15 @@
-import type { Hono } from "hono";
+import { Hono } from "hono";
 import "dotenv/config";
-import db from "../../db/index.js";
-import * as schema from "../../db/schema.js";
-import { eq, and, or } from "drizzle-orm";
-import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-import bcrypt from "bcrypt";
+import db from "../../../../db/index.js";
+import * as schema from "../../../../db/schema.js";
+import { eq, and } from "drizzle-orm";
+import { jwtAuth } from "../../../../middleware/auth.js";
 import { setCookie } from "hono/cookie";
-import { jwtAuth, sign } from "../../middleware/auth.js";
 
-export default function registerOrganizationPost(app: Hono) {
-  app.post("/:id/select", jwtAuth, async (c) => {
+
+const app = new Hono();
+
+export const POST = app.post("organizations/:id/select", jwtAuth, async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
 
@@ -36,12 +35,3 @@ export default function registerOrganizationPost(app: Hono) {
 
     return c.json({ success: true });
   });
-
-  app.post("/invitation/select", jwtAuth, async (c) => {
-    const user = c.get("user");
-    const id = c.req.param("id");
-
-
-    return c.json({ success: true });
-  });
-}

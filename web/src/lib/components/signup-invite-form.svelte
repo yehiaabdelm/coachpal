@@ -34,7 +34,7 @@
 		| undefined
 	> {
 		try {
-			const res = await fetch(`${PUBLIC_API_URL}/auth/invite/${page.params.token}`);
+			const res = await fetch(`${PUBLIC_API_URL}/invitations/${page.params.token}`);
 			if (res.ok) {
 				return await res.json();
 			} else {
