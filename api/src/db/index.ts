@@ -1,5 +1,12 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 import * as schema from "./schema.js"
+import pg from "pg";
 
-export default drizzle(process.env.DATABASE_URL ?? "", { schema, casing: 'snake_case' });
+
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+});
+
+export default drizzle(pool, { schema, casing: "snake_case" });

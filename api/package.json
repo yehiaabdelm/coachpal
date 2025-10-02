@@ -28,6 +28,7 @@
     "@react-email/preview-server": "^4.2.12",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.11.17",
+    "@types/pg": "^8.15.5",
     "react-email": "4.2.12",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"
