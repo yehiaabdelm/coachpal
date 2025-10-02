@@ -96,11 +96,13 @@ export const POST = app.post(
     });
 
     const authToken = await sign(user);
-    setCookie(c, "token", authToken, {
+    setCookie(c, "token", token, {
       path: "/",
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "None", // must be None for cross-site cookies
+      secure: process.env.NODE_ENV === "production", // true in prod, false in dev
+      domain:
+        process.env.NODE_ENV === "production" ? ".dev.coachpal.app" : undefined,
       maxAge: 60 * 60 * 24 * 30,
     });
     return c.json({ token: authToken });
