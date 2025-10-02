@@ -6,6 +6,10 @@ export const load = (async ({ fetch }) => {
 	const response = await fetch(`${PUBLIC_API_URL}/users/me`, {
 		credentials: 'include'
 	});
+	if (!response.ok) {
+		redirect(303, '/login');
+	}
+
 	const user: User = await response.json();
 
 	if (!user.emailVerifiedAt) {
@@ -14,5 +18,5 @@ export const load = (async ({ fetch }) => {
 
 	return {
 		user
-	}
+	};
 }) satisfies LayoutLoad;

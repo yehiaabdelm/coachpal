@@ -7,11 +7,17 @@ export const load = (async ({ fetch }) => {
 	const response = await fetch(`${PUBLIC_API_URL}/users/me`, {
 		credentials: 'include'
 	});
+
+	if (!response.ok) {
+		redirect(303, '/login');
+	}
+
 	const user: User = await response.json();
+
 	if (user.emailVerifiedAt) {
 		redirect(303, '/dashboard');
 	}
 	return {
 		user
-	}
+	};
 }) satisfies PageLoad;
