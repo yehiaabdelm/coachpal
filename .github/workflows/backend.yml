@@ -108,7 +108,8 @@ jobs:
           Environment=HOME=/opt/app
           Environment=DATABASE_URL=${{ secrets.DATABASE_URL }}
           Environment=JWT_SECRET=${{ secrets.JWT_SECRET }}
-          Environment=NODE_ENV=production
+          Environment=RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          Environment=NODE_ENV=prod
           ExecStart=/opt/node /opt/app/dist/src/index.js
           Restart=on-failure
           [Install]

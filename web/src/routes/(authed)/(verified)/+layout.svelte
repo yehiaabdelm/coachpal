@@ -4,8 +4,20 @@
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
 	import type { LayoutProps } from './$types';
+	import { onMount } from 'svelte';
+	import { selectOrganization } from '$lib/utils';
+	import { selectedOrganization } from '$lib/state/organization.svelte';
 
 	let { data, children }: LayoutProps = $props();
+
+	let hasSelectedOnLoad = $state(false);
+	onMount(() => {
+		if (!hasSelectedOnLoad && data?.user !== null && data?.user?.organizations.length > 0) {
+			hasSelectedOnLoad = true;
+			console.log("User data: ",data.user)
+			selectOrganization(data.user?.organizations[0]);
+		}
+	});
 </script>
 
 <Sidebar.Provider>

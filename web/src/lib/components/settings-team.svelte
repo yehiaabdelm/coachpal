@@ -54,7 +54,7 @@
 </header>
 <div class="mt-6 flex flex-col gap-5 overflow-y-auto p-4 pt-0">
 	<div class="flex flex-1 flex-col gap-4">
-		<p class="text-muted-foreground text-xs uppercase tracking-wider">Members</p>
+		<p class="text-muted-foreground text-[0.7rem] uppercase tracking-wider">Members</p>
 		{#each members as member (member.name)}
 			<div class="flex items-center justify-between gap-4">
 				<div class="flex items-center gap-4">
@@ -108,6 +108,6 @@
 		{/each}
 	</div>
 	<div class="">
-		<p class="text-muted-foreground text-xs uppercase tracking-wider">Invitations</p>
+		<p class="text-muted-foreground text-[0.7rem] uppercase tracking-wider">Invitations</p>
 	</div>
 </div>

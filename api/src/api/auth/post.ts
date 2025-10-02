@@ -8,6 +8,8 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import { setCookie } from "hono/cookie";
 import { jwtAuth, sign } from "../../middleware/auth.js";
+import { resend } from "../../emails/index.js";
+import { OTPEmail } from "../../emails/template/otp.js";
 
 const signupWithOrgSchema = z.object({
   email: z.email().transform((val) => val.trim().toLowerCase()),
@@ -219,16 +221,25 @@ export default function registerChatPost(app: Hono) {
           role: "owner",
         });
         const code = String(Math.floor(100000 + Math.random() * 900000));
-        const verificationCode = await tx
+        const [verificationCode] = await tx
           .insert(schema.verificationCodes)
           .values({
             userId: user.id,
             type: "email",
             code,
             expiresAt: new Date(Date.now() + 3 * 60 * 60 * 1000),
-          });
+          })
+          .returning();
         return { user, verificationCode };
       });
+
+      await resend.emails.send({
+        from: "CoachPal <noreply@coachpal.app>",
+        to: user.email,
+        subject: "Verify your email",
+        react: await OTPEmail({ otp: verificationCode.code }),
+      });
+
       // send email verification email
       const token = await sign(user);
       setCookie(c, "token", token);

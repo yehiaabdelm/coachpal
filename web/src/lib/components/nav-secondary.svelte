@@ -18,18 +18,6 @@
 		}[];
 	} & ComponentProps<typeof Sidebar.Group> = $props();
 
-	[
-		{
-			title: 'Payments',
-			url: '#',
-			icon: BankNoteIcon
-		},
-		{
-			title: 'Settings',
-			url: '#',
-			icon: Settings
-		}
-	];
 </script>
 
 <SettingsDialog open={settingsDialog} />

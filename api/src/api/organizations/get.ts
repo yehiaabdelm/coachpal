@@ -9,8 +9,8 @@ import bcrypt from "bcrypt";
 import { setCookie } from "hono/cookie";
 import { jwtAuth, sign } from "../../middleware/auth.js";
 
-export default function registerOrganizationPost(app: Hono) {
-  app.post("/:id/select", jwtAuth, async (c) => {
+export default function registerOrganizationGet(app: Hono) {
+  app.post("/:id/team", jwtAuth, async (c) => {
     const user = c.get("user");
     const id = c.req.param("id");
 
@@ -33,14 +33,6 @@ export default function registerOrganizationPost(app: Hono) {
       secure: process.env.NODE_ENV === "prod",
       path: "/",
     });
-
-    return c.json({ success: true });
-  });
-
-  app.post("/invitation/select", jwtAuth, async (c) => {
-    const user = c.get("user");
-    const id = c.req.param("id");
-
 
     return c.json({ success: true });
   });

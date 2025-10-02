@@ -43,14 +43,18 @@
 					{ title: 'Templates', url: '#' },
 					{ title: 'Exercise Library', url: '#' }
 				]
-			}
-		],
-		navSecondary: [
+			},
 			{
 				title: 'Payments',
 				url: '#',
-				icon: BankNoteIcon
-			},
+				icon: BankNoteIcon,
+				items: [
+					{ title: 'Payouts', url: '#' }, // Day 1, Day 2, etc
+					{ title: 'Products & Subscriptions', url: '#' }
+				]
+			}
+		],
+		navSecondary: [
 			{
 				title: 'Settings',
 				url: '#',

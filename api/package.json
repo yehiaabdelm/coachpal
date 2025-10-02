@@ -8,22 +8,27 @@
     "db:push": "drizzle-kit push",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "email:dev": "email dev -p 3001 --dir src/emails/template"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.4",
     "@hono/zod-validator": "^0.7.3",
+    "@react-email/components": "0.5.5",
     "bcrypt": "^6.0.0",
     "dotenv": "^17.2.2",
     "drizzle-kit": "^0.31.5",
     "drizzle-orm": "^0.44.5",
     "hono": "^4.9.8",
     "pg": "^8.16.3",
+    "resend": "^6.1.2",
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@react-email/preview-server": "^4.2.12",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.11.17",
+    "react-email": "4.2.12",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"
   }

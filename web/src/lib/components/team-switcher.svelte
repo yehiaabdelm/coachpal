@@ -5,8 +5,8 @@
 	import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down';
 	import PlusIcon from '@lucide/svelte/icons/plus';
 	import CommandIcon from '@lucide/svelte/icons/command';
-	import { PUBLIC_API_URL } from '$env/static/public';
-	import { onMount } from 'svelte';
+	import { selectedOrganization } from '$lib/state/organization.svelte';
+	import { selectOrganization } from '$lib/utils';
 	// This should be `Component` after @lucide/svelte updates types
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	let {
@@ -15,41 +15,8 @@
 		$props();
 
 	const sidebar = useSidebar();
-	let error = $state('');
-	let activeOrg = $state(organizations[0]);
-	let hasSelectedOnLoad = $state(false);
 
-	onMount(() => {
-		if (!hasSelectedOnLoad && activeOrg?.organization?.id) {
-			hasSelectedOnLoad = true;
-			selectOrganization(activeOrg.organization.id);
-		}
-	});
-
-	async function selectOrganization(orgId: string) {
-		try {
-			const res = await fetch(`${PUBLIC_API_URL}/organizations/${orgId}/select`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({}),
-				credentials: 'include'
-			});
-			if (!res.ok) {
-				const data = await res.json().catch(() => ({}));
-				throw new Error(data.message ?? 'Failed to select organization');
-			}
-		} catch (err: any) {
-			console.log(err);
-			error = err.message;
-		}
-	}
-
-	function handleOrgSelect(org: (typeof organizations)[0]) {
-		activeOrg = org;
-		if (org?.organization?.id) {
-			selectOrganization(org.organization.id);
-		}
-	}
+	$inspect(selectedOrganization)
 </script>
 
 <Sidebar.Menu>
@@ -69,9 +36,9 @@
 						</div>
 						<div class="grid flex-1 text-left text-sm leading-tight">
 							<span class="truncate font-medium">
-								{activeOrg?.organization?.name}
+								{selectedOrganization?.value?.organization?.name}
 							</span>
-							<span class="truncate text-xs capitalize">{activeOrg.role}</span>
+							<span class="truncate text-xs capitalize">{selectedOrganization?.value?.role}</span>
 						</div>
 						<ChevronsUpDownIcon class="ml-auto" />
 					</Sidebar.MenuButton>
@@ -85,7 +52,7 @@
 			>
 				<DropdownMenu.Label class="text-muted-foreground text-xs">Organizations</DropdownMenu.Label>
 				{#each organizations as org, index (org?.organization?.name)}
-					<DropdownMenu.Item onSelect={() => handleOrgSelect(org)} class="gap-2 p-2">
+					<DropdownMenu.Item onSelect={() => selectOrganization(org)} class="gap-2 p-2">
 						<div class="flex size-6 items-center justify-center rounded-md border">
 							<CommandIcon class="size-4" />
 						</div>
