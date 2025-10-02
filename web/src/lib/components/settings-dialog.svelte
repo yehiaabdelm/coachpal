@@ -13,6 +13,7 @@
 	import SettingsOrganization from './settings-organization.svelte';
 	import SettingsTeam from './settings-team.svelte';
 	import SettingsLanguageRegion from './settings-language-region.svelte';
+	import { selectedOrganization } from '$lib/state/organization.svelte';
 
 	const nav = [
 		{ name: 'General', icon: SettingsIcon, content: SettingsGeneral },
@@ -48,8 +49,12 @@
 											<CommandIcon class="size-4" />
 										</div>
 										<div class="grid flex-1 text-left text-sm leading-tight">
-											<span class="truncate font-medium">Acme Inc</span>
-											<span class="truncate text-xs">Enterprise</span>
+											<span class="truncate font-medium"
+												>{selectedOrganization.value?.organization?.name}</span
+											>
+											<span class="truncate text-xs capitalize"
+												>{selectedOrganization.value?.role}</span
+											>
 										</div>
 									</a>
 								{/snippet}

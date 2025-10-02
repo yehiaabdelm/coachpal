@@ -64,7 +64,7 @@
 				<DropdownMenu.Separator />
 
 				<DropdownMenu.Group>
-					<a href="mailto:yehia@coachpal.app">
+					<a href="mailto:support@coachpal.app">
 						<DropdownMenu.Item>
 							<LifeBuoy />
 							Support

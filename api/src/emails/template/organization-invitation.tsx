@@ -60,8 +60,8 @@ export const InvitationEmail: React.FC<BaseEmailProps> = ({
                 <Text style={copyright}>© {new Date().getFullYear()} CoachPal</Text>
                 <Text style={footer}>
                     For questions contact{' '}
-                    <Link href="mailto:yehia@coachpal.app" style={link}>
-                        yehia@coachpal.app
+                    <Link href="mailto:support@coachpal.app" style={link}>
+                        support@coachpal.app
                     </Link>
                 </Text>
             </Container>

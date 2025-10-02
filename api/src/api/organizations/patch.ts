@@ -10,7 +10,7 @@ import { setCookie } from "hono/cookie";
 import { jwtAuth, sign } from "../../middleware/auth.js";
 
 export default function registerOrganizationPatch(app: Hono) {
-  app.patch("/:id/team", jwtAuth, async (c) => {
+  app.patch("/team", jwtAuth, async (c) => {
     return c.json({ success: true });
   });
 }

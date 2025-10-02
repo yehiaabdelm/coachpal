@@ -17,7 +17,6 @@
 			icon: Component;
 		}[];
 	} & ComponentProps<typeof Sidebar.Group> = $props();
-
 </script>
 
 <SettingsDialog open={settingsDialog} />
@@ -25,14 +24,14 @@
 <Sidebar.Group bind:ref {...restProps}>
 	<Sidebar.GroupContent>
 		<Sidebar.Menu>
-			<Sidebar.MenuItem>
+			<!-- <Sidebar.MenuItem>
 				<a href="/payments">
 					<Sidebar.MenuButton size="default">
 						<BankNoteIcon />
 						<span>Payments</span>
 					</Sidebar.MenuButton>
 				</a>
-			</Sidebar.MenuItem>
+			</Sidebar.MenuItem> -->
 			<Sidebar.MenuItem
 				class="curor-pointer"
 				onclick={() => {

@@ -27,7 +27,8 @@ export const users = pgTable("users", {
   hashedPassword: text().notNull(),
   dateOfBirth: date(),
   biologicalSex: biologicalSexEnum(),
-  timezone: varchar({ length: 64 }),
+  timezone: text(),
+  avatarFileId: uuid().references((): AnyPgColumn => files.id),
   emailVerifiedAt: timestamp({
     mode: "date",
     withTimezone: true,
@@ -125,10 +126,14 @@ export const invitationStatusEnum = pgEnum("invitation_status", [
 
 export const invitations = pgTable("invitations", {
   id: uuid().primaryKey().defaultRandom(),
-  invitedByUserId: uuid().references(() => users.id, { onDelete: "set null" }).notNull(),
-  organizationId: uuid().references(() => organizations.id, {
-    onDelete: "cascade",
-  }).notNull(),
+  invitedByUserId: uuid()
+    .references(() => users.id, { onDelete: "set null" })
+    .notNull(),
+  organizationId: uuid()
+    .references(() => organizations.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
   email: text().notNull(),
   firstName: text(),
   lastName: text(),
@@ -426,7 +431,7 @@ export const userRelations = relations(users, ({ many, one }) => ({
 }));
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
-    organization: one(organizations, {
+  organization: one(organizations, {
     fields: [invitations.organizationId],
     references: [organizations.id],
   }),
@@ -446,12 +451,15 @@ export const invitationsRelations = relations(invitations, ({ one }) => ({
   }),
 }));
 
-export const verificationCodesRelations = relations(verificationCodes, ({ one }) => ({
-  user: one(users, {
-    fields: [verificationCodes.userId],
-    references: [users.id],
-  }),
-}));
+export const verificationCodesRelations = relations(
+  verificationCodes,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [verificationCodes.userId],
+      references: [users.id],
+    }),
+  })
+);
 
 export const weightEntriesRelations = relations(weightEntries, ({ one }) => ({
   user: one(users, { fields: [weightEntries.userId], references: [users.id] }),
