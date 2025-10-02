@@ -12,4 +12,7 @@ export const load = (async ({ fetch }) => {
 		redirect(303, '/email-verification');
 	}
 
+	return {
+		user
+	}
 }) satisfies LayoutLoad;
