@@ -29,7 +29,7 @@ export const POST = app.post("organizations/:id/select", jwtAuth, async (c) => {
       maxAge: 60 * 60 * 24 * 365,
       httpOnly: false,
       sameSite: "Lax",
-      secure: process.env.NODE_ENV === "prod",
+      secure: process.env.NODE_ENV === "production",
       path: "/",
     });
 

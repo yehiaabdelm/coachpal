@@ -71,7 +71,13 @@ export const POST = app.post(
 
     // send email verification email
     const token = await sign(user);
-    setCookie(c, "token", token);
+    setCookie(c, "token", token, {
+      path: "/",
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 30,
+    });
     return c.json({ token });
   }
 );

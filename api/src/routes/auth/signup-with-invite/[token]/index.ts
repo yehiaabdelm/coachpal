@@ -96,7 +96,13 @@ export const POST = app.post(
     });
 
     const authToken = await sign(user);
-    setCookie(c, "token", authToken);
+    setCookie(c, "token", authToken, {
+      path: "/",
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 30,
+    });
     return c.json({ token: authToken });
   }
 );
