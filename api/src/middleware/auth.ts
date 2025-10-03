@@ -4,12 +4,19 @@ import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import db from "../db/index.js";
 import * as schema from "../db/schema.js";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 type AppUser = { id: string; email: string };
 
 type Variables = JwtVariables & {
   user: AppUser;
+};
+
+type OrgVariables = Variables & {
+  organization: {
+    id: string;
+    role: string;
+  };
 };
 
 const ISSUER = process.env.APP_ISSUER ?? "healthchat"; // optional but nice
@@ -51,6 +58,37 @@ export const jwtAuth = createMiddleware<{ Variables: Variables }>(
     if (!user) {
       return c.json({ error: "Unauthorized" }, 401);
     }
+  }
+);
+
+export const orgAuth = createMiddleware<{ Variables: OrgVariables }>(
+  async (c, next) => {
+    const user = c.get("user");
+    if (!user) {
+      return c.json({ message: "Unauthorized" }, 401);
+    }
+
+    const orgId = getCookie(c, "org_id");
+    if (!orgId) {
+      return c.json({ message: "Missing org id" }, 400);
+    }
+
+    const membership = await db.query.userOrganization.findFirst({
+      where: and(
+        eq(schema.userOrganization.userId, user.id),
+        eq(schema.userOrganization.organizationId, orgId)
+      ),
+    });
+
+    if (!membership) {
+      return c.json({ message: "Forbidden" }, 403);
+    }
+
+    c.set("organization", {
+      id: membership.organizationId,
+      role: membership.role,
+    });
+    await next();
   }
 );
 

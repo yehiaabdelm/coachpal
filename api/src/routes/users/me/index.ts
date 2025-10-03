@@ -14,6 +14,7 @@ export const GET = app.get("/users/me", jwtAuth, async (c) => {
       firstName: true,
       lastName: true,
       email: true,
+      dateOfBirth: true,
       emailVerifiedAt: true,
     },
     with: {

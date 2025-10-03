@@ -22,6 +22,13 @@
       "when": 1759364921483,
       "tag": "0002_cold_red_shift",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759494674206,
+      "tag": "0003_cold_hairball",
+      "breakpoints": true
     }
   ]
 }

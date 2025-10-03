@@ -83,7 +83,7 @@ export const userOrganization = pgTable("user_organization", {
   userId: uuid().references(() => users.id, { onDelete: "cascade" }),
   organizationId: uuid().references(() => organizations.id, {
     onDelete: "cascade",
-  }),
+  }).notNull(),
   role: varchar({ length: 40 })
     .notNull()
     .references(() => roles.name, { onDelete: "restrict" }),

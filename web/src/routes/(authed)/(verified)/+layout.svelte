@@ -14,7 +14,7 @@
 	onMount(() => {
 		if (!hasSelectedOnLoad && data?.user !== null && data?.user?.organizations.length > 0) {
 			hasSelectedOnLoad = true;
-			console.log("User data: ",data.user)
+			console.log('User data: ', data.user);
 			selectOrganization(data.user?.organizations[0]);
 		}
 	});
@@ -30,11 +30,11 @@
 				<Breadcrumb.Root>
 					<Breadcrumb.List>
 						<Breadcrumb.Item class="hidden md:block">
-							<Breadcrumb.Link href="#">Building Your Application</Breadcrumb.Link>
+							<Breadcrumb.Link href="#">Clients</Breadcrumb.Link>
 						</Breadcrumb.Item>
 						<Breadcrumb.Separator class="hidden md:block" />
 						<Breadcrumb.Item>
-							<Breadcrumb.Page>Data Fetching</Breadcrumb.Page>
+							<Breadcrumb.Page>Yaseen Ahmed</Breadcrumb.Page>
 						</Breadcrumb.Item>
 					</Breadcrumb.List>
 				</Breadcrumb.Root>

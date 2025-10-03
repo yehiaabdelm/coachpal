@@ -14,7 +14,6 @@
 		lastName: '',
 		password: ''
 	});
-	let error = $state('');
 
 	async function fetchInvite(): Promise<
 		| {
@@ -57,7 +56,7 @@
 	async function handleSubmit(e: Event) {
 		e.preventDefault();
 		try {
-			const res = await fetch(`${PUBLIC_API_URL}/auth/signup-with-organization`, {
+			const res = await fetch(`${PUBLIC_API_URL}/auth/signup-with-invite`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload),
@@ -71,7 +70,6 @@
 			window.location.href = '/dashboard';
 		} catch (err: any) {
 			console.log(err);
-			error = err.message;
 		}
 	}
 
@@ -91,7 +89,7 @@
 		{#await inviteData}
 			<Spinner />
 		{:then value}
-			<form>
+			<form onsubmit={handleSubmit}>
 				<div class="flex flex-col gap-6">
 					<div class="grid gap-3">
 						<div class="grid gap-3">

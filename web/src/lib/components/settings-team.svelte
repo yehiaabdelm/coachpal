@@ -4,6 +4,7 @@
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Popover from './ui/popover';
 	import * as Command from './ui/command';
+	import Label from './ui/label/label.svelte';
 
 	let members = $state([
 		{
@@ -54,11 +55,12 @@
 </header>
 <div class="mt-6 flex flex-col gap-5 overflow-y-auto p-4 pt-0">
 	<div class="flex flex-1 flex-col gap-4">
-		<p class="text-muted-foreground text-[0.7rem] uppercase tracking-wider">Members</p>
-		{#each members as member (member.name)}
+		<!-- <p class="text-muted-foreground text-[0.7rem] uppercase tracking-wider">Members</p> -->
+		<Label for="members">Members</Label>
+		<!-- {#each members as member (member.name)}
 			<div class="flex items-center justify-between gap-4">
 				<div class="flex items-center gap-4">
-					<!-- <Avatar.Root class="border">
+					<Avatar.Root class="border">
 						<Avatar.Image src={member.avatar} alt="Image" />
 						<Avatar.Fallback>
 							{member.name
@@ -66,7 +68,7 @@
 								.map((n) => n[0])
 								.join('')}
 						</Avatar.Fallback>
-					</Avatar.Root> -->
+					</Avatar.Root>
 					<div class="flex flex-col gap-0.5">
 						<p class="text-sm font-medium leading-none">{member.name}</p>
 						<p class="text-muted-foreground text-xs">{member.email}</p>
@@ -105,9 +107,9 @@
 					</Popover.Content>
 				</Popover.Root>
 			</div>
-		{/each}
+		{/each} -->
 	</div>
 	<div class="">
-		<p class="text-muted-foreground text-[0.7rem] uppercase tracking-wider">Invitations</p>
+		<Label for="Invitations">Invitations</Label>
 	</div>
 </div>
